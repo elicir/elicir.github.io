@@ -145,7 +145,7 @@ function createLegend(id){
       minVal = "<=";
       break;
     case yearlyButton:
-      title = "Annual snowfall";
+      title = "Annual snowfall (cm)";
       yearlyLegend = legend;
       grades = [40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 480, 520, 560];
       minVal = "<=";
