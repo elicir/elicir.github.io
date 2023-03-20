@@ -114,7 +114,7 @@ function createControl(){
 
   // method that we will use to update the control based on feature properties passed
   info.update = function (props) {
-      this._div.innerHTML = '<h4>Percent change in yearly snowfall</h4><h5><em>Average from 1997-2001 to 2017-2021</em></h5>'
+      this._div.innerHTML = '<h4>Percent change in annual snowfall</h4><h5><em>Average from 1997-2001 to 2017-2021</em></h5>'
       +  (props ?
           '<b>' + props.CDNAME + '</b><br />' + parseFloat(props._mean ).toFixed(2) + '%'
           : 'Hover over a census division');
@@ -223,7 +223,7 @@ function generateButton(id) {
       label = "percent change raster";
       break;
     case yearlyButton:
-      label = "yearly snowfall";
+      label = "annual snowfall";
       break;
     case changeCensusButton:
       label = "percent change by census division"
