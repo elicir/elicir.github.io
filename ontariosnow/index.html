@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ontario Yearly Snowfall 1997-2021</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="map"></div>
+      <div id="other">
+        <ul class="layers"></ul>
+        <div id="yearlyslider">
+          <div class="slidecontainer">
+            <input type="range" min="1" max="100" value="1" class="slider" id="slider"><label id="sliderLabel"></label>
+          </div>
+          <button id="play">Play</button><button id="stop">Stop</button>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
