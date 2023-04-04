@@ -190,8 +190,7 @@ function highlightFeature(e) {
   layer.setStyle({
       weight: 2,
       color: '#666',
-      dashArray: '',
-      fillOpacity: 0.7
+      dashArray: ''
   });
 
   layer.bringToFront();
@@ -199,12 +198,25 @@ function highlightFeature(e) {
 }
 
 function resetHighlight(e) {
+  var layer = e.target;
+  var oldFillOpacity = layer.options.fillOpacity;
   census.resetStyle(e.target);
+  layer.setStyle({
+    fillOpacity: oldFillOpacity
+  });
   info.update();
 }
 
 function zoomToFeature(e) {
-  map.fitBounds(e.target.getBounds());
+  var layer = e.target;
+  map.fitBounds(layer.getBounds(), {padding: [50,50]});
+  if (layer.feature.properties._mean) {
+    layer.bindPopup("<b>" + layer.feature.properties.CDNAME + "</b><br/>" +
+      "Mean: " + parseFloat(layer.feature.properties._mean).toFixed(2) + '%' +
+      "<br/>Min: " + parseFloat(layer.feature.properties._min).toFixed(2) + '%' +
+      "<br/>Max: " + parseFloat(layer.feature.properties._max).toFixed(2) + '%' +
+      "<br/>Range: " + parseFloat(layer.feature.properties._range).toFixed(2) + '%').openPopup();
+    }
 }
 
 function onEachFeature(feature, layer) {
@@ -213,6 +225,7 @@ function onEachFeature(feature, layer) {
       mouseout: resetHighlight,
       click: zoomToFeature
   });
+  
 }
 
 const layersContainer = document.querySelector(".layers");
@@ -226,7 +239,7 @@ function generateButton(id) {
       label = "annual snowfall";
       break;
     case changeCensusButton:
-      label = "percent change by census division"
+      label = "percent change by census division";
       break;
     default:
       label = id;
@@ -238,6 +251,17 @@ function generateButton(id) {
         <input type="checkbox" id="${id}" name="item" class="item" value="${label}" checked>
         <span>${label}</span>
       </label>
+      <div class="slidecontainer" id="${id}Opacity">
+        <label id="${id}SliderLabel">Opacity: 70</label><input type="range" min="0" max="100" value="70" class="slider" id="${id}Slider" onchange="updateOpacity(this.value, this.id)">
+      </div>` + (id == yearlyButton ? `
+      <div id="yearlyslider">
+        <div class="slidecontainer">
+          <input type="range" min="1" max="100" value="1" class="slider" id="slider"><label id="sliderLabel"></label>
+        </div>
+        <button id="play">Play</button><button id="stop">Stop</button>
+      </div>
+      ` : '') +
+      `
     </li>
   `;
 
@@ -300,19 +324,26 @@ function stopTimer(e){
 
 function checkedType(id, type) {
   map[type ? "addLayer" : "removeLayer"](window["layer_" + id]);
-
+  var opacityDiv = document.querySelector(`#${id}Opacity`);
+  var yearlyDiv = document.getElementById('yearlyslider');
   if (type) {
+    opacityDiv.style.visibility = "visible";
+    opacityDiv.style.height = "auto";
     if (id == yearlyButton) {
-      document.getElementById('yearlyslider').style.visibility = "visible";
+      yearlyDiv.style.visibility = "visible";
+      yearlyDiv.style.height = "auto";
     } else if (id == changeCensusButton) {
       createControl();
     } 
     createLegend(id);
     map.fitBounds(imageBounds);
   } else {
+    opacityDiv.style.visibility = "hidden";
+    opacityDiv.style.height = "0";
     if (id == yearlyButton) {
       stopTimer();
-      document.getElementById('yearlyslider').style.visibility = "hidden";
+      yearlyDiv.style.visibility = "hidden";
+      yearlyDiv.style.height = "0";
       map.removeControl(yearlyLegend);
     } else if (id == changeCensusButton) {
       map.removeControl(info);
@@ -321,7 +352,6 @@ function checkedType(id, type) {
       map.removeControl(changeLegend);
     }
   }
-
   document.querySelector(`#${id}`).checked = type;
 }
 
@@ -385,3 +415,21 @@ document.getElementById('stop').onclick = stopTimer;
 
 //hiding the stop button by default
 document.getElementById('stop').style.display = "none";
+
+function updateOpacity(value, id) {
+  //changing the label
+  document.querySelector(`#${id}Label`).innerHTML = "Opacity: " + value;
+
+  var strippedId = id.replace('Slider','');
+  var layer = window["layer_" + strippedId];
+  if (strippedId == changeCensusButton) {
+    layer.setStyle({
+      fillOpacity: value/100
+    });
+    info.update();
+  } else {
+    //setting the url of the overlay
+    layer.setOpacity(value / 100);
+  }
+  
+}

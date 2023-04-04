@@ -83,13 +83,15 @@ input[type="checkbox"]:checked {
 }
 .slidecontainer {
   text-align: center;
+  padding: 5px;
 }
 
 #yearlyslider { 
   visibility:visible;
+  padding: 0px;
  }
 
-label#sliderLabel {
+ .slidecontainer label {
   justify-content: center;
 }
 
@@ -119,4 +121,8 @@ label#sliderLabel {
   float: left;
   margin-right: 8px;
   opacity: 0.7;
+}
+
+button {
+  margin: 0 25%;
 }
